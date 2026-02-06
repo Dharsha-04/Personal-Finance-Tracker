@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PennyPilot | Personal Finance Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Notifications -->
+    <div id="notification-container"></div>
+
+    <!-- Authentication View -->
+    <div id="auth-view" class="container full-height">
+        <div class="glass-card auth-card animate-up">
+            <div class="logo-area">
+                <i class="fas fa-wallet logo-icon"></i>
+                <h1>PennyPilot</h1>
+            </div>
+            <p class="subtitle">Master your money with clarity.</p>
+
+            <!-- Login Form -->
+            <form id="login-form">
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="login-email" placeholder="Email Address" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="login-password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-primary btn-glow">Sign In</button>
+                <div class="auth-switch">
+                    <span>New here?</span>
+                    <a href="#" id="show-register">Create Account</a>
+                </div>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="hidden">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="reg-username" placeholder="Full Name" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="reg-email" placeholder="Email Address" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="reg-password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-primary btn-glow">Create Account</button>
+                <div class="auth-switch">
+                    <span>Already a member?</span>
+                    <a href="#" id="show-login">Sign In</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application View -->
+    <div id="app-view" class="hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar glass-panel">
+            <div class="brand">
+                <i class="fas fa-wallet"></i>
+                <span>PennyPilot</span>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-view="dashboard">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-view="transactions">
+                    <i class="fas fa-list-ul"></i>
+                    <span>Transactions</span>
+                </button>
+                <button class="nav-item" data-view="budgets">
+                    <i class="fas fa-bullseye"></i>
+                    <span>Budgets</span>
+                </button>
+                <button class="nav-item" data-view="profile">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Profile</span>
+                </button>
+            </nav>
+
+            <div class="user-profile">
+                <div class="avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <span id="nav-username">User</span>
+                    <small>Premium</small>
+                </div>
+                <button id="logout-btn" class="logout-icon"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <section id="dashboard" class="content-view active animate-fade">
+                <header class="view-header">
+                    <div>
+                        <h2>Overview</h2>
+                        <p class="date-display" id="current-date">October 24, 2023</p>
+                    </div>
+                    <button class="btn-primary btn-sm" onclick="openTransactionModal()">
+                        <i class="fas fa-plus"></i> Add Transaction
+                    </button>
+                </header>
+
+                <div class="stats-cards">
+                    <div class="glass-card stat animate-up delay-1">
+                        <div class="stat-icon income-bg"><i class="fas fa-arrow-down"></i></div>
+                        <div class="stat-info">
+                            <span class="label">Total Income</span>
+                            <h3 id="dash-income">₹0.00</h3>
+                        </div>
+                    </div>
+                    <div class="glass-card stat animate-up delay-2">
+                        <div class="stat-icon expense-bg"><i class="fas fa-arrow-up"></i></div>
+                        <div class="stat-info">
+                            <span class="label">Total Expenses</span>
+                            <h3 id="dash-expense">₹0.00</h3>
+                        </div>
+                    </div>
+                    <div class="glass-card stat animate-up delay-3">
+                        <div class="stat-icon balance-bg"><i class="fas fa-wallet"></i></div>
+                        <div class="stat-info">
+                            <span class="label">Total Balance</span>
+                            <h3 id="dash-balance">₹0.00</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="glass-card chart-card animate-up delay-4">
+                        <div class="card-header">
+                            <h3>Budget Progress</h3>
+                            <button class="btn-icon" onclick="switchView('budgets')"><i
+                                    class="fas fa-external-link-alt"></i></button>
+                        </div>
+                        <div id="budget-summary-container" class="budget-list-compact">
+                            <!-- Budget items injected via JS -->
+                            <div class="empty-state">No budgets set.</div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card recent-card animate-up delay-5">
+                        <div class="card-header">
+                            <h3>Recent Transactions</h3>
+                            <button class="btn-text" onclick="switchView('transactions')">View All</button>
+                        </div>
+                        <div id="recent-transactions-list" class="transaction-list">
+                            <!-- Transactions injected via JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Transactions View -->
+            <section id="transactions" class="content-view hidden animate-fade">
+                <header class="view-header">
+                    <h2>Transactions</h2>
+                    <div class="actions">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="transaction-search" placeholder="Search...">
+                        </div>
+                        <button class="btn-primary btn-sm" onclick="openTransactionModal()">
+                            <i class="fas fa-plus"></i> Add New
+                        </button>
+                    </div>
+                </header>
+
+                <div class="glass-card table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="all-transactions-body">
+                            <!-- Rows injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Budgets View -->
+            <section id="budgets" class="content-view hidden animate-fade">
+                <header class="view-header">
+                    <h2>Budget Planning</h2>
+                    <button class="btn-primary btn-sm" onclick="openBudgetModal()">
+                        <i class="fas fa-plus"></i> Set Budget
+                    </button>
+                </header>
+
+                <div class="budgets-grid" id="all-budgets-grid">
+                    <!-- Budget cards injected via JS -->
+                </div>
+            </section>
+
+            <!-- Profile View (Placeholder) -->
+            <section id="profile" class="content-view hidden animate-fade">
+                <header class="view-header">
+                    <h2>Your Profile</h2>
+                </header>
+                <div class="glass-card user-detail-card">
+                    <div class="large-avatar"><i class="fas fa-user"></i></div>
+                    <h3 id="profile-name">User Name</h3>
+                    <p id="profile-email">user@example.com</p>
+                    <button class="btn-secondary mt-2" onclick="openProfileModal()">Edit Profile</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <!-- Transaction Modal -->
+        <div id="transaction-modal" class="modal glass-card hidden">
+            <div class="modal-header">
+                <h3>Add Transaction</h3>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="add-transaction-form">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Type</label>
+                        <select id="t-type" onchange="updateCategories()">
+                            <option value="expense">Expense</option>
+                            <option value="income">Income</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Amount</label>
+                        <input type="number" id="t-amount" placeholder="0.00" step="0.01" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Category</label>
+                        <select id="t-category" required>
+                            <!-- Options filled by JS -->
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Date</label>
+                        <input type="date" id="t-date" required>
+                    </div>
+                    <div class="input-group full-width">
+                        <label>Description (Optional)</label>
+                        <input type="text" id="t-desc" placeholder="What was this for?">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary full-width mt-2">Save Transaction</button>
+            </form>
+        </div>
+
+        <!-- Budget Modal -->
+        <div id="budget-modal" class="modal glass-card hidden">
+            <div class="modal-header">
+                <h3>Set Budget Goal</h3>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="add-budget-form">
+                <div class="input-group">
+                    <label>Category</label>
+                    <select id="b-category" required></select>
+                </div>
+                <div class="input-group">
+                    <label>Monthly Limit</label>
+                    <input type="number" id="b-limit" placeholder="500.00" step="0.01" required>
+                </div>
+                <button type="submit" class="btn-primary full-width mt-2">Set Budget</button>
+            </form>
+        </div>
+
+        <!-- Profile Modal -->
+        <div id="profile-modal" class="modal glass-card hidden">
+            <div class="modal-header">
+                <h3>Edit Profile</h3>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="edit-profile-form">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="p-username" required>
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="p-email" required>
+                </div>
+                <div class="input-group">
+                    <label>New Password (Optional)</label>
+                    <input type="password" id="p-password" placeholder="Leve blank to keep current">
+                </div>
+                <button type="submit" class="btn-primary full-width mt-2">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
